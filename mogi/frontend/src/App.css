@@ -36,18 +36,6 @@
     transform: rotate(360deg);
   }
 }
-
-.trimmer-container { width: 100%; max-width: 800px; margin: auto; }
-.upload-box { border: 2px dashed #ccc; padding: 50px; text-align: center; }
-.preview-section video { width: 100%; background: #000; }
-.timeline-section { background: #f0f0f0; padding: 20px; border-radius: 8px; margin-top: 20px;}
-.timeline-controls { display: flex; justify-content: space-between; margin-bottom: 10px; color: #333; }
-.timeline-controls input { width: 80px; }
-.timeline-slider { position: relative; }
-.timeline-slider input[type="range"] { width: 100%; }
-.action-section { text-align: right; margin-top: 20px; }
-.save-button { padding: 10px 20px; font-size: 16px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
-.custom-file-upload { /* 이전과 동일 */ }
 /* input[type="file"] { display: none; } */
 
 /* ... 기존 trimmer-container, upload-box 등 CSS ... */
@@ -103,23 +91,23 @@ input[type="file"] {
 }
 
 .preview-section video {
-  width: 100%;
+  width: 50%;
   background: #000;
   border-radius: 8px;
 }
 
 .timeline-section {
   background: #f0f0f0;
-  padding: 20px;
+  padding: 10px;
   border-radius: 8px;
-  margin-top: 20px;
+  margin-top: 5px;
 }
 
 .timeline-info {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 5px;
   color: #333;
 }
 

@@ -1,10 +1,10 @@
 // /src/VideoEditor.tsx
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import Preview from './components/Preview';
-import Timeline from './components/Timeline';
-import MediaLibrary from './components/MediaLibrary';
-import { MediaFile, TimelineClip } from './types';
+import Preview from './Preview';
+import Timeline from './Timeline';
+import MediaLibrary from './MediaLibrary';
+import { MediaFile, TimelineClip } from '../types';
 
 interface ActiveClipInfo {
   clip: TimelineClip | null;

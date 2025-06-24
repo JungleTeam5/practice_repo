@@ -1,15 +1,16 @@
 // src/App.tsx
 import React from 'react';
-import VideoUploader from './VideoUploader';
-import VideoTrimmer from './VideoTrimmer';
+import VideoUploader from './components/VideoUploader';
+import VideoTrimmer from './components/VideoTrimmer';
 import './App.css';
+import EditorPage from './EditorPage';
 
 function App() {
   return (
     <div className="App">
       <header className="App-header">
         <VideoUploader />
-        <VideoTrimmer />
+        <EditorPage/>
       </header>
     </div>
   );

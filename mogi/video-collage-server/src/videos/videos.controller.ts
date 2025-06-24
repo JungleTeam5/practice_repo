@@ -9,6 +9,7 @@ import {
   HttpException,
   HttpStatus,
   Logger,
+  Body,
 } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { VideosService } from './videos.service';
@@ -16,6 +17,19 @@ import { Response } from 'express';
 import * as fs from 'fs';
 import { diskStorage } from 'multer'; // 👈 multer에서 diskStorage를 직접 임포트합니다.
 import * as path from 'path';
+
+class EditDataDto {
+  editData: string; // JSON 문자열로 받음
+}
+
+export interface TrimmerEditData {
+  startTime: number;
+  endTime: number;
+}
+interface EditData {
+  trimmer1: TrimmerEditData;
+  trimmer2: TrimmerEditData;
+}
 
 @Controller('videos')
 export class VideosController {
@@ -51,6 +65,7 @@ export class VideosController {
   )
   async createCollage(
     @UploadedFiles() files: { video1?: Express.Multer.File[]; video2?: Express.Multer.File[] },
+    @Body() body: EditDataDto,
     @Res() res: Response,
   ) {
     // post work1, post work2 로그는 직접 추가하신 것 같으니 그대로 두셔도 좋습니다.
@@ -59,13 +74,28 @@ export class VideosController {
       throw new HttpException('두 개의 영상 파일이 모두 필요합니다.', HttpStatus.BAD_REQUEST);
     }
 
+    const editData = JSON.parse(body.editData) as EditData;
+
+    console.log('Video 1 File:', files.video1[0].path);
+    console.log('Video 1 Edit Info:', editData.trimmer1); // { startTime: 0, endTime: 10 }
+
+    console.log('Video 2 File:', files.video2[0].path);
+    console.log('Video 2 Edit Info:', editData.trimmer2);
+
     // 이제 files.video1[0] 객체에는 반드시 'path' 속성이 포함될 것입니다.
     const video1 = files.video1[0];
     const video2 = files.video2[0];
+    const trimmer1 = editData.trimmer1;
+    const trimmer2 = editData.trimmer2;
     let outputFilePath: string = '';
 
     try {
-      outputFilePath = await this.videosService.createCollage(video1, video2);
+      outputFilePath = await this.videosService.createCollage(
+        video1,
+        video2,
+        trimmer1,
+        trimmer2,
+      );
 
       const stream = fs.createReadStream(outputFilePath);
       res.setHeader('Content-Type', 'video/mp4');

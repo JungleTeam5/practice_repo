@@ -13,3 +13,18 @@ export interface TimelineClip {
   media: MediaFile;
   duration: number; 
 }
+
+// /src/types.ts
+
+export interface SourceVideo {
+  file: File;
+  url: string;
+  duration: number;
+}
+
+export interface TrimmerState {
+  id: string;
+  sourceVideo: SourceVideo | null;
+  startTime: number;
+  endTime: number;
+}
