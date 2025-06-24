@@ -36,3 +36,207 @@
     transform: rotate(360deg);
   }
 }
+
+.trimmer-container { width: 100%; max-width: 800px; margin: auto; }
+.upload-box { border: 2px dashed #ccc; padding: 50px; text-align: center; }
+.preview-section video { width: 100%; background: #000; }
+.timeline-section { background: #f0f0f0; padding: 20px; border-radius: 8px; margin-top: 20px;}
+.timeline-controls { display: flex; justify-content: space-between; margin-bottom: 10px; color: #333; }
+.timeline-controls input { width: 80px; }
+.timeline-slider { position: relative; }
+.timeline-slider input[type="range"] { width: 100%; }
+.action-section { text-align: right; margin-top: 20px; }
+.save-button { padding: 10px 20px; font-size: 16px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+.custom-file-upload { /* 이전과 동일 */ }
+/* input[type="file"] { display: none; } */
+
+/* ... 기존 trimmer-container, upload-box 등 CSS ... */
+
+.timeline-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  color: #333;
+  font-family: monospace;
+}
+
+.slider-container {
+  padding: 10px 5px; /* 슬라이더 핸들이 잘리지 않도록 여백 추가 */
+}
+
+/* ... 기존 trimmer-container 등 CSS ... */
+.trimmer-container {
+  width: 100%;
+  max-width: 800px;
+  margin: auto;
+  background: #fdfdfd;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  color: #333;
+}
+
+.upload-box {
+  border: 2px dashed #ccc;
+  padding: 50px;
+  text-align: center;
+  border-radius: 8px;
+}
+
+.custom-file-upload {
+  border: 1px solid #007bff;
+  display: inline-block;
+  padding: 10px 20px;
+  cursor: pointer;
+  background-color: #007bff;
+  color: white;
+  border-radius: 5px;
+  font-weight: bold;
+}
+
+.custom-file-upload:hover {
+  background-color: #0056b3;
+}
+
+input[type="file"] {
+  display: none;
+}
+
+.preview-section video {
+  width: 100%;
+  background: #000;
+  border-radius: 8px;
+}
+
+.timeline-section {
+  background: #f0f0f0;
+  padding: 20px;
+  border-radius: 8px;
+  margin-top: 20px;
+}
+
+.timeline-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.time-input-group {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: white;
+  padding: 5px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+}
+
+.time-input-group label {
+  font-size: 14px;
+  font-weight: 500;
+  padding-left: 5px;
+}
+
+.time-input-group input[type="number"] {
+  width: 70px;
+  border: none;
+  font-size: 14px;
+  text-align: right;
+  padding: 2px;
+  background: transparent;
+  outline: none;
+}
+
+.time-input-group input[type=number]::-webkit-inner-spin-button, 
+.time-input-group input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}
+
+
+.current-time-display {
+  font-weight: bold;
+  color: #d9534f;
+  font-family: monospace;
+  font-size: 16px;
+}
+
+.slider-stack {
+  position: relative;
+  padding: 10px 5px;
+  height: 20px; /* 슬라이더들이 겹칠 공간 확보 */
+  display: flex;
+  align-items: center;
+}
+
+.slider-stack .rc-slider {
+  position: absolute;
+  width: calc(100% - 10px);
+}
+
+.base-track .rc-slider-rail {
+  background-color: #e9ecef;
+  height: 8px;
+  border-radius: 4px;
+}
+.base-track .rc-slider-track, .base-track .rc-slider-handle {
+  display: none;
+}
+
+.trim-range .rc-slider-rail {
+  background-color: transparent;
+}
+.trim-range .rc-slider-track {
+  background-color: rgba(0, 123, 255, 0.5);
+  height: 8px;
+  border-radius: 4px;
+}
+.trim-range .rc-slider-handle {
+  border: 2px solid #007bff;
+  background-color: white;
+  width: 20px;
+  height: 20px;
+  margin-top: -6px;
+  z-index: 2;
+  cursor: grab;
+}
+
+.seek-slider .rc-slider-rail, .seek-slider .rc-slider-track {
+  background-color: transparent;
+}
+.seek-slider .rc-slider-handle {
+  border: 2px solid #d9534f;
+  background-color: #d9534f;
+  width: 4px; /* 핸들을 얇은 선으로 변경 */
+  height: 24px; /* 핸들을 길게 변경 */
+  margin-top: -8px;
+  margin-left: -2px;
+  border-radius: 2px;
+  z-index: 3;
+  cursor: pointer;
+}
+.seek-slider .rc-slider-handle:focus, .seek-slider .rc-slider-handle:active {
+    box-shadow: none;
+}
+
+
+.action-section {
+  text-align: right;
+  margin-top: 20px;
+}
+
+.save-button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+}
+.save-button:hover {
+  background: #218838;
+}
