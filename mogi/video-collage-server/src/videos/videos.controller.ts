@@ -59,8 +59,6 @@ export class VideosController {
       throw new HttpException('두 개의 영상 파일이 모두 필요합니다.', HttpStatus.BAD_REQUEST);
     }
 
-    console.log('post work1: ', files.video1[0]);
-    console.log('post work2: ', files.video2[0]);
     // 이제 files.video1[0] 객체에는 반드시 'path' 속성이 포함될 것입니다.
     const video1 = files.video1[0];
     const video2 = files.video2[0];
@@ -84,7 +82,7 @@ export class VideosController {
       });
     } catch (error) {
       if (outputFilePath) {
-         this.videosService.cleanupFile(outputFilePath);
+        this.videosService.cleanupFile(outputFilePath);
       }
       throw new HttpException(
         error.message || '영상 처리 중 서버 오류 발생',

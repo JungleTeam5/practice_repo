@@ -37,14 +37,17 @@ export class VideosService {
           // 2. 두 번째 비디오의 높이를 1080px로 조절 (가로세로 비율 유지) -> 결과 이름 [v1]
           // 3. 높이가 통일된 [v0]와 [v1]을 옆으로 붙임 -> 최종 비디오 결과 [v]
           '[0:v]scale=-2:1080[v0];[1:v]scale=-2:1080[v1];[v0][v1]hstack=inputs=2[v]',
-          
-          // 오디오는 첫 번째 비디오의 것을 사용합니다.
-          '[0:a]apad[a]',
+          // --- 오디오 처리 부분 (acopy 대신 amix 사용) ---
+          // 1. 첫 번째 오디오([0:a])와 두 번째 오디오([1:a])를 입력으로 받음
+          // 2. 2개의 입력을(inputs=2) 가장 긴 길이를 기준으로(duration=longest) 믹싱
+          // 3. 그 결과에 [a] 라는 이름표를 붙임
+          '[0:a][1:a]amix=inputs=2:duration=longest[a]',
         ])
         .map('[v]')
         .map('[a]')
         .outputOptions('-c:v', 'libx264')
         .outputOptions('-preset', 'fast')
+        .outputOptions('-shortest')
         .on('start', (commandLine) => {
           this.logger.log('Spawned FFmpeg with command: ' + commandLine);
         })
@@ -60,12 +63,16 @@ export class VideosService {
           this.logger.error('ffmpeg stderr:\n' + stderr);
           this.cleanupFile(video1.path);
           this.cleanupFile(video2.path);
-          reject(new InternalServerErrorException(`비디오 처리 중 오류 발생: ${err.message}`));
+          reject(
+            new InternalServerErrorException(
+              `비디오 처리 중 오류 발생: ${err.message}`,
+            ),
+          );
         })
         .save(outputPath);
     });
   }
-  
+
   cleanupFile(filePath: string) {
     fs.unlink(filePath, (err) => {
       if (err) {
