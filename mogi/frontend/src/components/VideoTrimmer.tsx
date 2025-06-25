@@ -1,28 +1,51 @@
-// /src/components/VideoTrimmer.tsx
-
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useImperativeHandle, forwardRef } from 'react';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 import { TrimmerState, SourceVideo } from '../types';
 
-// 부모로부터 받을 Props 타입 정의
+export interface TrimmerRef {
+  playVideo: () => void;
+  pauseVideo: () => void;
+  seekToStart: () => void;
+}
+
 interface VideoTrimmerProps {
   trimmerId: string;
   initialState: TrimmerState;
   onUpdate: (id: string, newState: Partial<Omit<TrimmerState, 'id'>>) => void;
 }
 
-const VideoTrimmer: React.FC<VideoTrimmerProps> = ({ trimmerId, initialState, onUpdate }) => {
+const VideoTrimmer = forwardRef<TrimmerRef, VideoTrimmerProps>(({ trimmerId, initialState, onUpdate }, ref) => {
   const { sourceVideo, startTime, endTime } = initialState;
 
-  // 이 컴포넌트 내부에서만 사용하는 상태들
   const [currentTime, setCurrentTime] = useState<number>(0);
   const [startTimeInput, setStartTimeInput] = useState<string>('0.00');
   const [endTimeInput, setEndTimeInput] = useState<string>('0.00');
 
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  // 부모로부터 받은 상태(startTime, endTime)가 바뀌면 입력창의 문자열도 업데이트
+  useImperativeHandle(ref, () => ({
+    playVideo: () => {
+      if(videoRef.current) {
+        if (videoRef.current.currentTime < startTime || videoRef.current.currentTime >= endTime) {
+          videoRef.current.currentTime = startTime;
+        }
+        videoRef.current.play();
+      }
+    },
+    pauseVideo: () => {
+      videoRef.current?.pause();
+    },
+    seekToStart: () => {
+      if (videoRef.current) {
+        // 비디오의 현재 재생 시간을 설정된 시작 시간으로 변경
+        videoRef.current.currentTime = startTime;
+        // UI 표시를 위해 컴포넌트의 현재 시간 상태도 업데이트
+        setCurrentTime(startTime);
+      }
+    },
+  }));
+
   useEffect(() => {
     setStartTimeInput(startTime.toFixed(2));
   }, [startTime]);
@@ -30,8 +53,7 @@ const VideoTrimmer: React.FC<VideoTrimmerProps> = ({ trimmerId, initialState, on
   useEffect(() => {
     setEndTimeInput(endTime.toFixed(2));
   }, [endTime]);
-
-  // 파일 업로드 시, 부모에게 상태 업데이트를 요청
+  
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -42,7 +64,6 @@ const VideoTrimmer: React.FC<VideoTrimmerProps> = ({ trimmerId, initialState, on
       
       videoElement.onloadedmetadata = () => {
         const duration = videoElement.duration;
-        // 부모에게 업데이트 알림
         onUpdate(trimmerId, {
           sourceVideo: { file, url: videoURL, duration },
           startTime: 0,
@@ -53,7 +74,6 @@ const VideoTrimmer: React.FC<VideoTrimmerProps> = ({ trimmerId, initialState, on
     }
   };
 
-  // 비디오 시간 업데이트 핸들러
   const handleTimeUpdate = () => {
     if (!videoRef.current) return;
     const newCurrentTime = videoRef.current.currentTime;
@@ -68,7 +88,6 @@ const VideoTrimmer: React.FC<VideoTrimmerProps> = ({ trimmerId, initialState, on
     }
   };
 
-  // 구간 설정 슬라이더 핸들러: 부모에게 업데이트 알림
   const handleRangeChange = (value: number | number[]) => {
     if (Array.isArray(value)) {
       const newStartTime = value[0];
@@ -82,7 +101,6 @@ const VideoTrimmer: React.FC<VideoTrimmerProps> = ({ trimmerId, initialState, on
     }
   };
 
-  // 현재 시간 탐색 슬라이더 핸들러
   const handleCurrentTimeChange = (value: number | number[]) => {
     const newTime = Array.isArray(value) ? value[0] : value;
     const clampedTime = Math.max(startTime, Math.min(newTime, endTime));
@@ -92,7 +110,6 @@ const VideoTrimmer: React.FC<VideoTrimmerProps> = ({ trimmerId, initialState, on
     }
   };
 
-  // 입력창 핸들러
   const handleStartTimeInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setStartTimeInput(e.target.value);
   };
@@ -151,6 +168,6 @@ const VideoTrimmer: React.FC<VideoTrimmerProps> = ({ trimmerId, initialState, on
       )}
     </div>
   );
-};
+});
 
 export default VideoTrimmer;

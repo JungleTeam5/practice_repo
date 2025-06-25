@@ -228,3 +228,34 @@ input[type="file"] {
 .save-button:hover {
   background: #218838;
 }
+
+/* App.css 또는 관련 CSS 파일에 추가 */
+
+.waveform-container {
+  position: relative;
+  background-color: #f0f0f0;
+  border-radius: 4px;
+  margin-bottom: 15px;
+}
+
+.waveform-loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  z-index: 10;
+}
+
+/* 비디오 컨트롤을 숨기고 싶을 경우 */
+.preview-section video::-webkit-media-controls {
+  display: none !important;
+}
+.preview-section video {
+   /* display: none; */ /* 주석 처리 또는 제거. wavesurfer가 media 옵션을 사용하므로 숨김 처리 */
+}
