@@ -334,13 +334,15 @@ input[type="file"] {
    7. Global Actions Section
    ========================================================================== */
 .global-action-section {
-  margin-top: var(--spacing-xl);
-  padding-top: var(--spacing-lg);
-  border-top: 1px solid var(--color-border);
   display: flex;
-  justify-content: center;
-  gap: var(--spacing-md);
-  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: center;
+  /* ✨ 이 값을 늘려주세요. 예를 들어 1.5rem에서 2.5rem으로 변경 */
+  gap: 2.5rem; /* 기존 1.5rem에서 간격을 더 늘림 */
+  padding: 1.5rem;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
 }
 
 /* Base button style */

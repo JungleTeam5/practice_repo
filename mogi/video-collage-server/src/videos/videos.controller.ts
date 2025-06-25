@@ -22,11 +22,21 @@ class EditDataDto {
   editData: string; // JSON 문자열로 받음
 }
 
+interface EQBand {
+  id: string;
+  frequency: number;
+  gain: number;
+}
+
 export interface TrimmerEditData {
   startTime: number;
   endTime: number;
+  volume: number;
+  aspectRatio: string;
+  equalizer: EQBand[];
 }
 interface EditData {
+  layout: string;
   trimmer1: TrimmerEditData;
   trimmer2: TrimmerEditData;
 }
@@ -76,15 +86,10 @@ export class VideosController {
 
     const editData = JSON.parse(body.editData) as EditData;
 
-    console.log('Video 1 File:', files.video1[0].path);
-    console.log('Video 1 Edit Info:', editData.trimmer1); // { startTime: 0, endTime: 10 }
-
-    console.log('Video 2 File:', files.video2[0].path);
-    console.log('Video 2 Edit Info:', editData.trimmer2);
-
     // 이제 files.video1[0] 객체에는 반드시 'path' 속성이 포함될 것입니다.
     const video1 = files.video1[0];
     const video2 = files.video2[0];
+    const layout = editData.layout;
     const trimmer1 = editData.trimmer1;
     const trimmer2 = editData.trimmer2;
     let outputFilePath: string = '';
@@ -93,6 +98,7 @@ export class VideosController {
       outputFilePath = await this.videosService.createCollage(
         video1,
         video2,
+        layout,
         trimmer1,
         trimmer2,
       );

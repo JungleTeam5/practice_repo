@@ -93,6 +93,7 @@ const VideoTrimmer = forwardRef<TrimmerRef, VideoTrimmerProps>(({ trimmerId, ini
   const [currentTime, setCurrentTime] = useState<number>(0);
   const [startTimeInput, setStartTimeInput] = useState<string>('0.00');
   const [endTimeInput, setEndTimeInput] = useState<string>('0.00');
+  const [isPlaying, setIsPlaying] = useState<boolean>(false); 
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null); // 파일 입력을 위한 ref 추가
@@ -105,6 +106,9 @@ const VideoTrimmer = forwardRef<TrimmerRef, VideoTrimmerProps>(({ trimmerId, ini
 
   // 비디오가 로드될 때 Web Audio API 설정
   useEffect(() => {
+    // ✨ 메모리 누수 방지를 위해 현재 URL을 변수에 저장
+    const currentVideoUrl = sourceVideo?.url;
+
     if (sourceVideo && videoRef.current && !audioContextRef.current) {
       const context = new AudioContext();
       const source = context.createMediaElementSource(videoRef.current);
@@ -114,15 +118,13 @@ const VideoTrimmer = forwardRef<TrimmerRef, VideoTrimmerProps>(({ trimmerId, ini
         filter.type = 'peaking';
         filter.frequency.value = band.frequency;
         filter.gain.value = band.gain;
-        filter.Q.value = 1.41; // 적절한 Q 값
+        filter.Q.value = 1.41;
         return filter;
       });
 
-      // ✨ GainNode(볼륨 조절기) 생성
       const gainNode = context.createGain();
-      gainNode.gain.value = volume; // 초기 볼륨 설정
+      gainNode.gain.value = volume;
 
-      // 필터 체인 연결: source -> filter1 -> filter2 -> ... -> destination
       let lastNode: AudioNode = source;
       if (filters.length > 0) {
         source.connect(filters[0]);
@@ -131,16 +133,16 @@ const VideoTrimmer = forwardRef<TrimmerRef, VideoTrimmerProps>(({ trimmerId, ini
         }
         lastNode = filters[filters.length - 1];
       }
-      lastNode.connect(gainNode); // 마지막 필터(또는 소스)를 GainNode에 연결
-      gainNode.connect(context.destination); // GainNode를 최종 출력에 연결
+      lastNode.connect(gainNode);
+      gainNode.connect(context.destination);
 
       audioContextRef.current = context;
       sourceNodeRef.current = source;
       filterNodesRef.current = filters;
-      gainNodeRef.current = gainNode; // ✨ GainNode ref 저장
+      gainNodeRef.current = gainNode;
     }
     
-    // 컴포넌트 언마운트 시 오디오 컨텍스트 정리
+    // 컴포넌트 언마운트 또는 sourceVideo 변경 시 오디오 컨텍스트와 URL 정리
     return () => {
       if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
         audioContextRef.current.close().catch(console.error);
@@ -149,8 +151,13 @@ const VideoTrimmer = forwardRef<TrimmerRef, VideoTrimmerProps>(({ trimmerId, ini
         filterNodesRef.current = [];
         gainNodeRef.current = null;
       }
+      
+      // ✨ 2. 메모리 누수 방지: 사용이 끝난 Object URL을 해제합니다.
+      if (currentVideoUrl) {
+        URL.revokeObjectURL(currentVideoUrl);
+      }
     };
-  }, [sourceVideo]); // sourceVideo가 변경될 때만 실행
+  }, [sourceVideo]); // sourceVideo가 변경될 때마다 이 effect가 재실행됩니다. // sourceVideo가 변경될 때만 실행
 
   // 이퀄라이저 상태가 외부에서 변경되면 오디오 필터에 즉시 반영
   useEffect(() => {
@@ -168,6 +175,24 @@ const VideoTrimmer = forwardRef<TrimmerRef, VideoTrimmerProps>(({ trimmerId, ini
       gainNodeRef.current.gain.value = volume;
     }
   }, [volume]);
+
+  const play = () => {
+    if (!videoRef.current) return;
+    // 오디오 컨텍스트가 정지 상태이면 재개
+    if (audioContextRef.current?.state === 'suspended') {
+      audioContextRef.current.resume();
+    }
+    // 재생 위치가 편집 범위를 벗어났으면 시작점으로 이동
+    if (videoRef.current.currentTime < startTime || videoRef.current.currentTime >= endTime) {
+      videoRef.current.currentTime = startTime;
+    }
+    videoRef.current.play();
+  };
+
+  const pause = () => {
+    videoRef.current?.pause();
+  };
+
 
   useImperativeHandle(ref, () => ({
     playVideo: () => {
@@ -192,6 +217,14 @@ const VideoTrimmer = forwardRef<TrimmerRef, VideoTrimmerProps>(({ trimmerId, ini
       }
     },
   }));
+
+  const togglePlayPause = () => {
+    if (isPlaying) {
+      pause();
+    } else {
+      play();
+    }
+  };
 
   useEffect(() => {
     setStartTimeInput(startTime.toFixed(2));
@@ -333,10 +366,14 @@ const VideoTrimmer = forwardRef<TrimmerRef, VideoTrimmerProps>(({ trimmerId, ini
             }}
           >
             <video 
+              // ✨ 1. 오류 해결: key prop을 추가하여 비디오 변경 시 요소를 완전히 새로 마운트합니다.
+              key={sourceVideo.url} 
               ref={videoRef} 
               src={sourceVideo.url} 
               onTimeUpdate={handleTimeUpdate} 
               crossOrigin="anonymous"
+              onPlay={() => setIsPlaying(true)}
+              onPause={() => setIsPlaying(false)}
               style={{ width: '100%', height: '100%', objectFit: 'cover' }}
             />
           </div>
@@ -348,6 +385,9 @@ const VideoTrimmer = forwardRef<TrimmerRef, VideoTrimmerProps>(({ trimmerId, ini
           {/* 2. <재생바> */}
           <div className="timeline-section">
             <div className="timeline-info">
+              <button onClick={togglePlayPause} className="play-pause-button">
+                {isPlaying ? '일시정지' : '재생'}
+              </button>
               <div className="time-input-group">
                 <label>시작</label>
                 <input type="number" value={startTimeInput} onChange={handleStartTimeInputChange} onBlur={updateTimeOnBlur} step="0.1" min="0" />

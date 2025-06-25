@@ -13,6 +13,36 @@ const defaultEQBands: EQBand[] = [
   { id: 'band5', frequency: 12000, gain: 0 }, // Treble
 ];
 
+// ✨ 레이아웃 방향을 위한 타입 정의
+type LayoutDirection = 'row' | 'column';
+
+// ✨ 레이아웃 방향 선택 UI 컴포넌트
+const LayoutDirectionControl: React.FC<{
+  currentDirection: LayoutDirection;
+  onDirectionChange: (direction: LayoutDirection) => void;
+}> = ({ currentDirection, onDirectionChange }) => {
+  return (
+    <div className="layout-control-section">
+      <h4>레이아웃</h4>
+      <div className="layout-buttons">
+        <button
+          className={`layout-button ${currentDirection === 'row' ? 'active' : ''}`}
+          onClick={() => onDirectionChange('row')}
+        >
+          가로 배치
+        </button>
+        <button
+          className={`layout-button ${currentDirection === 'column' ? 'active' : ''}`}
+          onClick={() => onDirectionChange('column')}
+        >
+          세로 배치
+        </button>
+      </div>
+    </div>
+  );
+};
+
+
 const EditorPage: React.FC = () => {
   const [trimmers, setTrimmers] = useState<TrimmerState[]>([
     {
@@ -34,6 +64,8 @@ const EditorPage: React.FC = () => {
       aspectRatio: '16:9',
     },
   ]);
+
+  const [layoutDirection, setLayoutDirection] = useState<LayoutDirection>('row');
 
   const trimmerRefs = useRef<Record<string, TrimmerRef | null>>({});
 
@@ -59,6 +91,7 @@ const EditorPage: React.FC = () => {
     formData.append('video2', trimmer2Data.sourceVideo.file);
 
     const editData = {
+      layout: layoutDirection,
       trimmer1: {
         startTime: trimmer1Data.startTime,
         endTime: trimmer1Data.endTime,
@@ -123,32 +156,41 @@ const EditorPage: React.FC = () => {
   return (
     <div className="editor-page">
       <h1>듀얼 비디오 트리머 & 이퀄라이저</h1>
-      <div className="trimmers-wrapper">
+{/* ✨ trimmers-wrapper에 동적 클래스 추가 */}
+      <div className={`trimmers-wrapper layout-${layoutDirection}`}>
         {trimmers.map((trimmerState) => (
-          <div key={trimmerState.id}>
+          <div key={trimmerState.id} className="trimmer-item-container">
             <VideoTrimmer
               ref={el => { trimmerRefs.current[trimmerState.id] = el; }}
               trimmerId={trimmerState.id}
               initialState={trimmerState}
               onUpdate={handleTrimmerUpdate}
             />
-            <br/>
           </div>
         ))}
       </div>
+
       <div className="global-action-section">
-        <button onClick={handleGlobalSeekToStart} className="global-action-button">
-          재생 위치 초기화
-        </button>
-        <button onClick={handleGlobalPlay} className="global-action-button">
-          동시 재생
-        </button>
-        <button onClick={handleGlobalPause} className="global-action-button">
-          동시 정지
-        </button>
-        <button onClick={handleGlobalSave} className="global-save-button">
-          전체 저장 및 콜라주 생성
-        </button>
+        {/* ✨ 레이아웃 제어 컴포넌트 추가 */}
+        <LayoutDirectionControl 
+          currentDirection={layoutDirection}
+          onDirectionChange={setLayoutDirection}
+        />
+
+        <div className="global-button-group">
+          <button onClick={handleGlobalSeekToStart} className="global-action-button">
+            재생 위치 초기화
+          </button>
+          <button onClick={handleGlobalPlay} className="global-action-button">
+            동시 재생
+          </button>
+          <button onClick={handleGlobalPause} className="global-action-button">
+            동시 정지
+          </button>
+          <button onClick={handleGlobalSave} className="global-save-button">
+            전체 저장 및 콜라주 생성
+          </button>
+        </div>
       </div>
     </div>
   );
