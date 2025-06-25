@@ -126,75 +126,86 @@ export class VideosService {
 
     filterComplex.push(`${lastAudioNode1}${lastAudioNode2}amix=inputs=2[a]`);
 
+    // --- 1. 설정값 ---
+    // ✨ 모서리 둥글기 효과를 위한 반지름 값 (0으로 설정 시 효과 없음)
+    const cornerRadius = 30; // 예시: 30px
+
     // --- 2. 비디오 필터 체인 ---
 
-    // --- 2a. 동적 프레임 크기 계산 (✨ 수정됨) ---
+    // --- 2a. 동적 프레임 크기 계산 ---
+    const ensureEven = (num) => 2 * Math.round(num / 2);
 
-    // ✨ 숫자를 가장 가까운 짝수로 만드는 헬퍼 함수
-    const ensureEven = (num: number): number => {
-      return 2 * Math.round(num / 2);
-    };
-
-    const PADDING = 40; // PADDING은 짝수여야 합니다.
+    const PADDING = 40;
     const ar_val1 = eval(trimmer1.aspectRatio.replace(':', '/'));
     const ar_val2 = eval(trimmer2.aspectRatio.replace(':', '/'));
 
-    let bg_width: number, bg_height: number;
-    let frame1_w: number, frame1_h: number, frame2_w: number, frame2_h: number;
-    let x1: number, y1: number, x2: number, y2: number;
+    let bg_width, bg_height;
+    let frame1_w, frame1_h, frame2_w, frame2_h;
+    let x1, y1, x2, y2;
 
     if (layout === 'row') {
-      const collage_h = 1080; // 짝수
+      const collage_h = 1080;
       bg_height = collage_h;
-      
       const frame_h_common = ensureEven(collage_h - (PADDING * 2));
       frame1_h = frame_h_common;
       frame2_h = frame_h_common;
-
-      // ✨ 계산된 모든 너비 값을 짝수로 보정합니다.
       frame1_w = ensureEven(frame1_h * ar_val1);
       frame2_w = ensureEven(frame2_h * ar_val2);
-
       bg_width = PADDING + frame1_w + PADDING + frame2_w + PADDING;
-
       x1 = PADDING; y1 = PADDING;
       x2 = PADDING + frame1_w + PADDING; y2 = PADDING;
     } else { // 'column'
-      const collage_w = 1080; // 짝수
+      const collage_w = 1080;
       bg_width = collage_w;
-
       const frame_w_common = ensureEven(collage_w - (PADDING * 2));
       frame1_w = frame_w_common;
       frame2_w = frame_w_common;
-
-      // ✨ 계산된 모든 높이 값을 짝수로 보정합니다.
       frame1_h = ensureEven(frame1_w / ar_val1);
       frame2_h = ensureEven(frame2_w / ar_val2);
-      
       bg_height = PADDING + frame1_h + PADDING + frame2_h + PADDING;
-      
       x1 = PADDING; y1 = PADDING;
       x2 = PADDING; y2 = PADDING + frame1_h + PADDING;
     }
-    
-    // ✨ 최종 배경 크기도 짝수인지 확인 (안전장치)
+
     bg_width = ensureEven(bg_width);
     bg_height = ensureEven(bg_height);
 
     filterComplex.push(`color=c=black:s=${bg_width}x${bg_height}[bg]`);
 
-    // --- 2b. 각 비디오를 '잘라서' 프레임에 꽉 채우기 (변경 없음) ---
+    // --- 2b. 각 비디오 처리 ---
+
+    // -- 첫 번째 비디오 --
     filterComplex.push(`[0:v]trim=start=${trimmer1.startTime}:end=${trimmer1.endTime},setpts=PTS-STARTPTS[v0_trimmed]`);
     filterComplex.push(`[v0_trimmed]crop=w='min(iw,ih*(${ar_val1}))':h='min(ih,iw/(${ar_val1}))',setsar=1[v0_cropped]`);
     filterComplex.push(`[v0_cropped]scale=w=${frame1_w}:h=${frame1_h}[v0_final]`);
 
+    // ✨ 첫 번째 비디오에 둥근 모서리 적용
+    if (cornerRadius > 0) {
+      filterComplex.push(`color=c=black:s=${frame1_w}x${frame1_h}[mask0_base]`);
+      filterComplex.push(`[mask0_base]geq=lum='if(gt(hypot(X-max(${cornerRadius},min(W-${cornerRadius},X)),Y-max(${cornerRadius},min(H-${cornerRadius},Y))),${cornerRadius}),0,255)':a=255[mask0]`);
+      filterComplex.push(`[v0_final][mask0]alphamerge[v0_rounded]`);
+    }
+
+    // -- 두 번째 비디오 --
     filterComplex.push(`[1:v]trim=start=${trimmer2.startTime}:end=${trimmer2.endTime},setpts=PTS-STARTPTS[v1_trimmed]`);
     filterComplex.push(`[v1_trimmed]crop=w='min(iw,ih*(${ar_val2}))':h='min(ih,iw/(${ar_val2}))',setsar=1[v1_cropped]`);
     filterComplex.push(`[v1_cropped]scale=w=${frame2_w}:h=${frame2_h}[v1_final]`);
 
-    // --- 2c. 최종 오버레이 (변경 없음) ---
-    filterComplex.push(`[bg][v0_final]overlay=x=${x1}:y=${y1}[tmp]`);
-    filterComplex.push(`[tmp][v1_final]overlay=x=${x2}:y=${y2}[v]`);
+    // ✨ 두 번째 비디오에 둥근 모서리 적용
+    if (cornerRadius > 0) {
+      filterComplex.push(`color=c=black:s=${frame2_w}x${frame2_h}[mask1_base]`);
+      filterComplex.push(`[mask1_base]geq=lum='if(gt(hypot(X-max(${cornerRadius},min(W-${cornerRadius},X)),Y-max(${cornerRadius},min(H-${cornerRadius},Y))),${cornerRadius}),0,255)':a=255[mask1]`);
+      filterComplex.push(`[v1_final][mask1]alphamerge[v1_rounded]`);
+    }
+
+    // --- 2c. 최종 오버레이 ---
+    // ✨ 둥근 모서리가 적용된 스트림(v0_rounded, v1_rounded)을 사용하도록 수정합니다.
+    // cornerRadius가 0이면 원래 스트림(v0_final, v1_final)을 사용합니다.
+    const finalStream0 = cornerRadius > 0 ? '[v0_rounded]' : '[v0_final]';
+    const finalStream1 = cornerRadius > 0 ? '[v1_rounded]' : '[v1_final]';
+
+    filterComplex.push(`[bg]${finalStream0}overlay=x=${x1}:y=${y1}[tmp]`);
+    filterComplex.push(`[tmp]${finalStream1}overlay=x=${x2}:y=${y2}[v]`);
 
     return filterComplex;
   }
