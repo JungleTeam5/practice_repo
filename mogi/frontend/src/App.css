@@ -1,114 +1,126 @@
-.App {
-  text-align: center;
-}
+/* ==========================================================================
+   Global & Page Layout
+   ========================================================================== */
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-/* input[type="file"] { display: none; } */
-
-/* ... 기존 trimmer-container, upload-box 등 CSS ... */
-
-.timeline-info {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 20px;
+body {
+  background-color: #f0f2f5;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  margin: 0;
+  padding: 20px;
   color: #333;
-  font-family: monospace;
 }
 
-.slider-container {
-  padding: 10px 5px; /* 슬라이더 핸들이 잘리지 않도록 여백 추가 */
-}
-
-/* ... 기존 trimmer-container 등 CSS ... */
-.trimmer-container {
-  width: 100%;
-  max-width: 800px;
+.editor-page {
+  max-width: 1600px;
   margin: auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+}
+
+h1 {
+  text-align: center;
+  color: #1a202c;
+  margin-bottom: 30px;
+}
+
+/* ==========================================================================
+   Trimmers Wrapper & Individual Trimmer
+   ========================================================================== */
+
+.trimmers-wrapper {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  flex-wrap: wrap; /* 화면이 작아지면 아래로 떨어지도록 설정 */
+}
+
+.trimmer-container {
+  flex: 1; /* 가능한 공간을 동일하게 차지 */
+  min-width: 500px; /* 최소 너비 지정 */
+  max-width: 700px; /* 최대 너비 지정 */
   background: #fdfdfd;
   padding: 20px;
   border-radius: 10px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  color: #333;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
+/* ==========================================================================
+   Upload Box
+   ========================================================================== */
+
 .upload-box {
-  border: 2px dashed #ccc;
+  border: 2px dashed #cbd5e0;
   padding: 50px;
   text-align: center;
   border-radius: 8px;
+  background-color: #f7fafc;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .custom-file-upload {
-  border: 1px solid #007bff;
+  border: none;
   display: inline-block;
-  padding: 10px 20px;
+  padding: 12px 24px;
   cursor: pointer;
-  background-color: #007bff;
+  background-color: #4299e1;
   color: white;
   border-radius: 5px;
   font-weight: bold;
+  transition: background-color 0.2s;
 }
 
 .custom-file-upload:hover {
-  background-color: #0056b3;
+  background-color: #3182ce;
 }
 
 input[type="file"] {
   display: none;
 }
 
+
+/* ==========================================================================
+   Preview & Controls
+   ========================================================================== */
+
 .preview-section video {
-  width: 50%;
+  width: 100%; /* 부모 요소에 꽉 차게 */
   background: #000;
   border-radius: 8px;
+  display: block; /* video 요소 아래의 불필요한 여백 제거 */
 }
 
+.controls-wrapper {
+  display: flex;
+  gap: 20px;
+}
+
+/* ==========================================================================
+   Timeline Section
+   ========================================================================== */
+
 .timeline-section {
-  background: #f0f0f0;
-  padding: 10px;
+  flex-grow: 1;
+  background: #f7fafc;
+  padding: 15px;
   border-radius: 8px;
-  margin-top: 5px;
+  border: 1px solid #e2e8f0;
 }
 
 .timeline-info {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 5px;
-  color: #333;
+  margin-bottom: 10px;
+  color: #4a5568;
 }
 
 .time-input-group {
@@ -116,25 +128,24 @@ input[type="file"] {
   align-items: center;
   gap: 5px;
   background: white;
-  padding: 5px;
+  padding: 5px 8px;
   border-radius: 5px;
-  border: 1px solid #ddd;
+  border: 1px solid #cbd5e0;
 }
 
 .time-input-group label {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
-  padding-left: 5px;
 }
 
 .time-input-group input[type="number"] {
-  width: 70px;
+  width: 60px;
   border: none;
   font-size: 14px;
   text-align: right;
-  padding: 2px;
   background: transparent;
   outline: none;
+  font-family: monospace;
 }
 
 .time-input-group input[type=number]::-webkit-inner-spin-button, 
@@ -143,29 +154,29 @@ input[type="file"] {
   margin: 0; 
 }
 
-
 .current-time-display {
   font-weight: bold;
-  color: #d9534f;
+  color: #e53e3e;
   font-family: monospace;
   font-size: 16px;
 }
 
+/* --- Slider Stack --- */
 .slider-stack {
   position: relative;
-  padding: 10px 5px;
-  height: 20px; /* 슬라이더들이 겹칠 공간 확보 */
+  padding: 10px 0;
+  height: 24px;
   display: flex;
   align-items: center;
 }
 
 .slider-stack .rc-slider {
   position: absolute;
-  width: calc(100% - 10px);
+  width: 100%;
 }
 
 .base-track .rc-slider-rail {
-  background-color: #e9ecef;
+  background-color: #e2e8f0;
   height: 8px;
   border-radius: 4px;
 }
@@ -177,85 +188,166 @@ input[type="file"] {
   background-color: transparent;
 }
 .trim-range .rc-slider-track {
-  background-color: rgba(0, 123, 255, 0.5);
+  background-color: rgba(66, 153, 225, 0.5);
   height: 8px;
   border-radius: 4px;
 }
 .trim-range .rc-slider-handle {
-  border: 2px solid #007bff;
+  border: 2px solid #4299e1;
   background-color: white;
   width: 20px;
   height: 20px;
   margin-top: -6px;
   z-index: 2;
   cursor: grab;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .seek-slider .rc-slider-rail, .seek-slider .rc-slider-track {
   background-color: transparent;
 }
 .seek-slider .rc-slider-handle {
-  border: 2px solid #d9534f;
-  background-color: #d9534f;
-  width: 4px; /* 핸들을 얇은 선으로 변경 */
-  height: 24px; /* 핸들을 길게 변경 */
+  border: none;
+  background-color: #e53e3e;
+  width: 4px;
+  height: 24px;
   margin-top: -8px;
   margin-left: -2px;
   border-radius: 2px;
   z-index: 3;
   cursor: pointer;
-}
-.seek-slider .rc-slider-handle:focus, .seek-slider .rc-slider-handle:active {
-    box-shadow: none;
+  box-shadow: none;
 }
 
+/* ==========================================================================
+   Equalizer Section
+   ========================================================================== */
 
-.action-section {
-  text-align: right;
-  margin-top: 20px;
+.equalizer-section {
+  padding: 15px;
+  border-left: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
 }
 
-.save-button {
-  padding: 10px 20px;
+.equalizer-section h3 {
+  margin: 0 0 15px 0;
+  text-align: center;
   font-size: 16px;
-  background: #28a745;
-  color: white;
+  color: #4a5568;
+}
+
+.equalizer-controls {
+  display: flex;
+  gap: 15px;
+  align-items: flex-end;
+  height: 180px; /* 슬라이더 높이 확보 */
+}
+
+.eq-band {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 12px;
+  width: 40px;
+}
+
+.eq-band .rc-slider-vertical {
+  height: 120px;
+  margin: 10px 0;
+}
+
+.eq-band .rc-slider-vertical .rc-slider-rail {
+  background-color: #e2e8f0;
+  width: 6px;
+}
+.eq-band .rc-slider-vertical .rc-slider-track {
+  background-color: #4a5568;
+  width: 6px;
+}
+.eq-band .rc-slider-vertical .rc-slider-handle {
+  border: 2px solid #2d3748;
+  background-color: white;
+  margin-left: -5px;
+}
+
+.eq-band label {
+  font-weight: bold;
+  font-size: 13px;
+}
+.eq-band span {
+  font-family: monospace;
+  background-color: #edf2f7;
+  padding: 2px 4px;
+  border-radius: 4px;
+  margin-top: 5px;
+}
+
+
+/* ==========================================================================
+   Global Actions Section
+   ========================================================================== */
+
+.global-action-section {
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.global-action-button, .global-save-button {
+  padding: 10px 20px;
+  font-size: 15px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.global-action-button {
+  background-color: #edf2f7;
+  color: #2d3748;
+  border: 1px solid #e2e8f0;
+}
+.global-action-button:hover {
+  background-color: #e2e8f0;
+}
+
+.global-save-button {
+  background: #48bb78;
+  color: white;
   font-weight: bold;
 }
-.save-button:hover {
-  background: #218838;
+.global-save-button:hover {
+  background: #38a169;
 }
 
-/* App.css 또는 관련 CSS 파일에 추가 */
 
-.waveform-container {
-  position: relative;
-  background-color: #f0f0f0;
-  border-radius: 4px;
-  margin-bottom: 15px;
-}
+/* ==========================================================================
+   Responsive (for smaller screens)
+   ========================================================================== */
+@media (max-width: 768px) {
+  .trimmer-container {
+    min-width: 90%;
+  }
 
-.waveform-loading-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(255, 255, 255, 0.8);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-weight: bold;
-  z-index: 10;
-}
-
-/* 비디오 컨트롤을 숨기고 싶을 경우 */
-.preview-section video::-webkit-media-controls {
-  display: none !important;
-}
-.preview-section video {
-   /* display: none; */ /* 주석 처리 또는 제거. wavesurfer가 media 옵션을 사용하므로 숨김 처리 */
+  .controls-wrapper {
+    flex-direction: column;
+  }
+  .equalizer-section {
+    border-left: none;
+    border-top: 1px solid #e2e8f0;
+  }
+  .equalizer-controls {
+    flex-direction: row; /* 가로로 다시 눕히고 */
+    flex-wrap: wrap; /* 줄바꿈 허용 */
+    height: auto;
+    justify-content: center;
+  }
+  /* 세로 슬라이더를 가로로 바꾸는 것은 rc-slider 구조상 까다로우므로
+     여기서는 그냥 래핑만 처리합니다. */
 }

@@ -1,11 +1,34 @@
+// EditorPage.tsx
+
 import React, { useState, useRef } from 'react';
 import VideoTrimmer, { TrimmerRef } from './components/VideoTrimmer';
-import { TrimmerState, SourceVideo } from './types';
+import { TrimmerState, SourceVideo, EQBand } from './types'; // EQBand 임포트
+
+// 이퀄라이저 기본 설정 (예: 5-band EQ)
+const defaultEQBands: EQBand[] = [
+  { id: 'band1', frequency: 60, gain: 0 },    // Bass
+  { id: 'band2', frequency: 250, gain: 0 },
+  { id: 'band3', frequency: 1000, gain: 0 }, // Mid
+  { id: 'band4', frequency: 4000, gain: 0 },
+  { id: 'band5', frequency: 12000, gain: 0 }, // Treble
+];
 
 const EditorPage: React.FC = () => {
   const [trimmers, setTrimmers] = useState<TrimmerState[]>([
-    { id: 'trimmer1', sourceVideo: null, startTime: 0, endTime: 0 },
-    { id: 'trimmer2', sourceVideo: null, startTime: 0, endTime: 0 },
+    {
+      id: 'trimmer1',
+      sourceVideo: null,
+      startTime: 0,
+      endTime: 0,
+      equalizer: JSON.parse(JSON.stringify(defaultEQBands)), // 깊은 복사로 초기화
+    },
+    {
+      id: 'trimmer2',
+      sourceVideo: null,
+      startTime: 0,
+      endTime: 0,
+      equalizer: JSON.parse(JSON.stringify(defaultEQBands)), // 깊은 복사로 초기화
+    },
   ]);
 
   const trimmerRefs = useRef<Record<string, TrimmerRef | null>>({});
@@ -35,10 +58,12 @@ const EditorPage: React.FC = () => {
       trimmer1: {
         startTime: trimmer1Data.startTime,
         endTime: trimmer1Data.endTime,
+        equalizer: trimmer1Data.equalizer, // 이퀄라이저 데이터 추가
       },
       trimmer2: {
         startTime: trimmer2Data.startTime,
         endTime: trimmer2Data.endTime,
+        equalizer: trimmer2Data.equalizer, // 이퀄라이저 데이터 추가
       },
     };
     formData.append('editData', JSON.stringify(editData));
@@ -89,12 +114,11 @@ const EditorPage: React.FC = () => {
 
   return (
     <div className="editor-page">
-      <h1>듀얼 비디오 트리머</h1>
+      <h1>듀얼 비디오 트리머 & 이퀄라이저</h1>
       <div className="trimmers-wrapper">
         {trimmers.map((trimmerState) => (
-          <div>
+          <div key={trimmerState.id}>
             <VideoTrimmer
-              key={trimmerState.id}
               ref={el => { trimmerRefs.current[trimmerState.id] = el; }}
               trimmerId={trimmerState.id}
               initialState={trimmerState}

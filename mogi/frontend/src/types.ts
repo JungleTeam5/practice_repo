@@ -22,9 +22,16 @@ export interface SourceVideo {
   duration: number;
 }
 
+export interface EQBand {
+  id: string;
+  frequency: number; // 헤르츠 (Hz)
+  gain: number;      // 데시벨 (dB)
+}
+
 export interface TrimmerState {
   id: string;
   sourceVideo: SourceVideo | null;
   startTime: number;
   endTime: number;
+  equalizer: EQBand[];
 }
