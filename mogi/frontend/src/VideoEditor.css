@@ -1,0 +1,27 @@
+/* ... 기존 CSS ... */
+
+.timeline-tracks {
+  position: relative; /* playhead 위치 기준 */
+  /* ... */
+}
+
+.playhead {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background-color: red;
+  z-index: 10;
+}
+
+.controls-container {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  padding: 10px;
+  background-color: #3c3f46;
+  border-radius: 8px;
+}
+.controls-container button {
+    padding: 10px 20px;
+}

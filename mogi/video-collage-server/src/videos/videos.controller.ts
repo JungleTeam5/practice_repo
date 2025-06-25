@@ -9,6 +9,7 @@ import {
   HttpException,
   HttpStatus,
   Logger,
+  Body,
 } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { VideosService } from './videos.service';
@@ -16,6 +17,29 @@ import { Response } from 'express';
 import * as fs from 'fs';
 import { diskStorage } from 'multer'; // 👈 multer에서 diskStorage를 직접 임포트합니다.
 import * as path from 'path';
+
+class EditDataDto {
+  editData: string; // JSON 문자열로 받음
+}
+
+interface EQBand {
+  id: string;
+  frequency: number;
+  gain: number;
+}
+
+export interface TrimmerEditData {
+  startTime: number;
+  endTime: number;
+  volume: number;
+  aspectRatio: string;
+  equalizer: EQBand[];
+}
+interface EditData {
+  layout: string;
+  trimmer1: TrimmerEditData;
+  trimmer2: TrimmerEditData;
+}
 
 @Controller('videos')
 export class VideosController {
@@ -51,6 +75,7 @@ export class VideosController {
   )
   async createCollage(
     @UploadedFiles() files: { video1?: Express.Multer.File[]; video2?: Express.Multer.File[] },
+    @Body() body: EditDataDto,
     @Res() res: Response,
   ) {
     // post work1, post work2 로그는 직접 추가하신 것 같으니 그대로 두셔도 좋습니다.
@@ -59,15 +84,24 @@ export class VideosController {
       throw new HttpException('두 개의 영상 파일이 모두 필요합니다.', HttpStatus.BAD_REQUEST);
     }
 
-    console.log('post work1: ', files.video1[0]);
-    console.log('post work2: ', files.video2[0]);
+    const editData = JSON.parse(body.editData) as EditData;
+
     // 이제 files.video1[0] 객체에는 반드시 'path' 속성이 포함될 것입니다.
     const video1 = files.video1[0];
     const video2 = files.video2[0];
+    const layout = editData.layout;
+    const trimmer1 = editData.trimmer1;
+    const trimmer2 = editData.trimmer2;
     let outputFilePath: string = '';
 
     try {
-      outputFilePath = await this.videosService.createCollage(video1, video2);
+      outputFilePath = await this.videosService.createCollage(
+        video1,
+        video2,
+        layout,
+        trimmer1,
+        trimmer2,
+      );
 
       const stream = fs.createReadStream(outputFilePath);
       res.setHeader('Content-Type', 'video/mp4');
@@ -84,7 +118,7 @@ export class VideosController {
       });
     } catch (error) {
       if (outputFilePath) {
-         this.videosService.cleanupFile(outputFilePath);
+        this.videosService.cleanupFile(outputFilePath);
       }
       throw new HttpException(
         error.message || '영상 처리 중 서버 오류 발생',
