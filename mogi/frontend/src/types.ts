@@ -14,8 +14,6 @@ export interface TimelineClip {
   duration: number; 
 }
 
-// /src/types.ts
-
 export interface SourceVideo {
   file: File;
   url: string;
@@ -28,10 +26,15 @@ export interface EQBand {
   gain: number;      // 데시벨 (dB)
 }
 
+export type AspectRatio = '1:1' | '3:4' | '4:3' | '16:9' | '9:16' | 'original';
+
 export interface TrimmerState {
   id: string;
   sourceVideo: SourceVideo | null;
   startTime: number;
   endTime: number;
   equalizer: EQBand[];
+  volume: number;
+  // ✨ 화면 비율 상태 추가
+  aspectRatio: AspectRatio;
 }

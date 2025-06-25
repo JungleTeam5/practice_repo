@@ -1,136 +1,171 @@
 /* ==========================================================================
-   Global & Page Layout
+   1. Design System & Global Styles
    ========================================================================== */
 
+:root {
+  /* Colors */
+  --color-primary: #4299e1;
+  --color-primary-dark: #3182ce;
+  --color-success: #48bb78;
+  --color-success-dark: #38a169;
+  --color-danger: #e53e3e;
+  
+  --color-text-primary: #1a202c;
+  --color-text-secondary: #4a5568;
+  --color-text-on-primary: #ffffff;
+
+  --color-background: #f0f2f5;
+  --color-surface: #ffffff; /* 컨텐츠 영역 배경 */
+  --color-surface-alt: #f7fafc; /* 보조 배경 (업로드, 타임라인 등) */
+  
+  --color-border: #e2e8f0;
+  --color-border-focus: var(--color-primary);
+
+  /* Spacing */
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 20px;
+  --spacing-xl: 30px;
+
+  /* Border Radius */
+  --border-radius-sm: 5px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+
+  /* Shadows */
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+
+  /* Transitions */
+  --transition-fast: all 0.2s ease-out;
+}
+
 body {
-  background-color: #f0f2f5;
+  background-color: var(--color-background);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   margin: 0;
-  padding: 20px;
-  color: #333;
+  padding: var(--spacing-lg);
+  color: var(--color-text-primary);
+  line-height: 1.5;
 }
 
 .editor-page {
   max-width: 1600px;
   margin: auto;
-  padding: 20px;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  padding: var(--spacing-xl);
+  background: var(--color-surface);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-lg);
 }
 
 h1 {
   text-align: center;
-  color: #1a202c;
-  margin-bottom: 30px;
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-xl);
 }
 
 /* ==========================================================================
-   Trimmers Wrapper & Individual Trimmer
+   2. Trimmers & Layout
    ========================================================================== */
 
 .trimmers-wrapper {
   display: flex;
   justify-content: center;
-  gap: 30px;
-  flex-wrap: wrap; /* 화면이 작아지면 아래로 떨어지도록 설정 */
+  gap: var(--spacing-xl);
+  flex-wrap: wrap;
 }
 
 .trimmer-container {
-  flex: 1; /* 가능한 공간을 동일하게 차지 */
-  min-width: 500px; /* 최소 너비 지정 */
-  max-width: 700px; /* 최대 너비 지정 */
-  background: #fdfdfd;
-  padding: 20px;
-  border-radius: 10px;
-  border: 1px solid #e2e8f0;
+  flex: 1;
+  min-width: 500px;
+  max-width: 700px;
+  background: var(--color-surface);
+  padding: var(--spacing-lg);
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--color-border);
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: var(--spacing-lg);
 }
 
 /* ==========================================================================
-   Upload Box
+   3. Upload Box
    ========================================================================== */
 
 .upload-box {
-  border: 2px dashed #cbd5e0;
-  padding: 50px;
+  border: 2px dashed var(--color-border);
+  padding: var(--spacing-xl);
   text-align: center;
-  border-radius: 8px;
-  background-color: #f7fafc;
+  border-radius: var(--border-radius-md);
+  background-color: var(--color-surface-alt);
   height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  transition: var(--transition-fast);
 }
 
-.custom-file-upload {
-  border: none;
-  display: inline-block;
-  padding: 12px 24px;
-  cursor: pointer;
-  background-color: #4299e1;
-  color: white;
-  border-radius: 5px;
-  font-weight: bold;
-  transition: background-color 0.2s;
-}
-
-.custom-file-upload:hover {
-  background-color: #3182ce;
+.upload-box:hover {
+  border-color: var(--color-primary);
+  background-color: var(--color-surface);
 }
 
 input[type="file"] {
   display: none;
 }
 
-
 /* ==========================================================================
-   Preview & Controls
+   4. Preview & Controls
    ========================================================================== */
 
 .preview-section video {
-  width: 100%; /* 부모 요소에 꽉 차게 */
+  width: 100%;
+  aspect-ratio: 16 / 9;
   background: #000;
-  border-radius: 8px;
-  display: block; /* video 요소 아래의 불필요한 여백 제거 */
+  border-radius: var(--border-radius-md);
+  display: block;
 }
 
 .controls-wrapper {
   display: flex;
-  gap: 20px;
+  gap: var(--spacing-lg);
 }
 
 /* ==========================================================================
-   Timeline Section
+   5. Timeline Section
    ========================================================================== */
 
 .timeline-section {
   flex-grow: 1;
-  background: #f7fafc;
-  padding: 15px;
-  border-radius: 8px;
-  border: 1px solid #e2e8f0;
+  background: var(--color-surface-alt);
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--color-border);
 }
 
 .timeline-info {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
-  color: #4a5568;
+  margin-bottom: var(--spacing-md);
+  color: var(--color-text-secondary);
 }
 
 .time-input-group {
   display: flex;
   align-items: center;
-  gap: 5px;
-  background: white;
-  padding: 5px 8px;
-  border-radius: 5px;
-  border: 1px solid #cbd5e0;
+  gap: var(--spacing-sm);
+  background: var(--color-surface);
+  padding: var(--spacing-sm) 12px;
+  border-radius: var(--border-radius-sm);
+  border: 1px solid var(--color-border);
+  transition: var(--transition-fast);
+}
+
+.time-input-group:focus-within {
+  border-color: var(--color-border-focus);
+  box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.2);
 }
 
 .time-input-group label {
@@ -146,17 +181,18 @@ input[type="file"] {
   background: transparent;
   outline: none;
   font-family: monospace;
+  color: var(--color-text-primary);
 }
 
-.time-input-group input[type=number]::-webkit-inner-spin-button, 
-.time-input-group input[type=number]::-webkit-outer-spin-button { 
-  -webkit-appearance: none; 
-  margin: 0; 
+.time-input-group input[type=number]::-webkit-inner-spin-button,
+.time-input-group input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 .current-time-display {
   font-weight: bold;
-  color: #e53e3e;
+  color: var(--color-danger);
   font-family: monospace;
   font-size: 16px;
 }
@@ -176,7 +212,7 @@ input[type="file"] {
 }
 
 .base-track .rc-slider-rail {
-  background-color: #e2e8f0;
+  background-color: var(--color-border);
   height: 8px;
   border-radius: 4px;
 }
@@ -193,14 +229,19 @@ input[type="file"] {
   border-radius: 4px;
 }
 .trim-range .rc-slider-handle {
-  border: 2px solid #4299e1;
-  background-color: white;
+  border: 2px solid var(--color-primary);
+  background-color: var(--color-surface);
   width: 20px;
   height: 20px;
   margin-top: -6px;
   z-index: 2;
   cursor: grab;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: var(--shadow-md);
+  transition: transform 0.1s ease-in-out;
+}
+.trim-range .rc-slider-handle:active {
+  cursor: grabbing;
+  transform: scale(1.1);
 }
 
 .seek-slider .rc-slider-rail, .seek-slider .rc-slider-track {
@@ -208,7 +249,7 @@ input[type="file"] {
 }
 .seek-slider .rc-slider-handle {
   border: none;
-  background-color: #e53e3e;
+  background-color: var(--color-danger);
   width: 4px;
   height: 24px;
   margin-top: -8px;
@@ -220,28 +261,29 @@ input[type="file"] {
 }
 
 /* ==========================================================================
-   Equalizer Section
+   6. Equalizer Section
    ========================================================================== */
 
 .equalizer-section {
-  padding: 15px;
-  border-left: 1px solid #e2e8f0;
+  padding: var(--spacing-md);
   display: flex;
   flex-direction: column;
 }
 
 .equalizer-section h3 {
-  margin: 0 0 15px 0;
-  text-align: center;
+  margin: 0 0 var(--spacing-md) 0;
+  text-align: center; /* 가운데 정렬 통일 */
   font-size: 16px;
-  color: #4a5568;
+  color: var(--color-text-secondary);
+  font-weight: bold; /* 굵은 글씨로 통일 */
 }
 
 .equalizer-controls {
   display: flex;
-  gap: 15px;
+  justify-content: center; /* ✨ 그룹을 수평 중앙에 배치 */
+  gap: 40px; 
   align-items: flex-end;
-  height: 180px; /* 슬라이더 높이 확보 */
+  height: 180px;
 }
 
 .eq-band {
@@ -250,104 +292,230 @@ input[type="file"] {
   align-items: center;
   font-size: 12px;
   width: 40px;
+  color: var(--color-text-secondary);
 }
 
 .eq-band .rc-slider-vertical {
   height: 120px;
-  margin: 10px 0;
+  margin: var(--spacing-sm) 0;
 }
 
 .eq-band .rc-slider-vertical .rc-slider-rail {
-  background-color: #e2e8f0;
+  background-color: var(--color-border);
   width: 6px;
 }
 .eq-band .rc-slider-vertical .rc-slider-track {
-  background-color: #4a5568;
+  background-color: var(--color-text-secondary);
   width: 6px;
 }
 .eq-band .rc-slider-vertical .rc-slider-handle {
-  border: 2px solid #2d3748;
-  background-color: white;
+  border: 2px solid var(--color-text-secondary);
+  background-color: var(--color-surface);
   margin-left: -5px;
+}
+.eq-band .rc-slider-vertical .rc-slider-handle:hover {
+  border-color: var(--color-text-primary);
 }
 
 .eq-band label {
   font-weight: bold;
   font-size: 13px;
+  color: var(--color-text-primary);
 }
 .eq-band span {
   font-family: monospace;
-  background-color: #edf2f7;
+  background-color: var(--color-background);
   padding: 2px 4px;
   border-radius: 4px;
   margin-top: 5px;
 }
 
-
 /* ==========================================================================
-   Global Actions Section
+   7. Global Actions Section
    ========================================================================== */
-
 .global-action-section {
-  margin-top: 30px;
-  padding-top: 20px;
-  border-top: 1px solid #e2e8f0;
+  margin-top: var(--spacing-xl);
+  padding-top: var(--spacing-lg);
+  border-top: 1px solid var(--color-border);
   display: flex;
   justify-content: center;
-  gap: 15px;
+  gap: var(--spacing-md);
   flex-wrap: wrap;
 }
 
-.global-action-button, .global-save-button {
+/* Base button style */
+.btn {
   padding: 10px 20px;
   font-size: 15px;
-  border: none;
-  border-radius: 5px;
+  border: 1px solid transparent;
+  border-radius: var(--border-radius-sm);
   cursor: pointer;
   font-weight: 500;
-  transition: all 0.2s;
+  transition: var(--transition-fast);
+  display: inline-block;
+  text-decoration: none;
 }
 
-.global-action-button {
-  background-color: #edf2f7;
-  color: #2d3748;
-  border: 1px solid #e2e8f0;
+/* Secondary/Default button */
+.btn-secondary {
+  background-color: var(--color-surface-alt);
+  color: var(--color-text-secondary);
+  border-color: var(--color-border);
 }
-.global-action-button:hover {
-  background-color: #e2e8f0;
+.btn-secondary:hover {
+  background-color: #e2e8f0; /* Slightly darker alt */
+  border-color: #cbd5e0;
+  color: var(--color-text-primary);
 }
 
-.global-save-button {
-  background: #48bb78;
-  color: white;
+/* Primary/Save button */
+.btn-primary {
+  background: var(--color-success);
+  color: var(--color-text-on-primary);
   font-weight: bold;
 }
-.global-save-button:hover {
-  background: #38a169;
+.btn-primary:hover {
+  background: var(--color-success-dark);
 }
 
+/* Custom file upload button using base button styles */
+.custom-file-upload {
+  border: none;
+  display: inline-block;
+  padding: 12px 24px;
+  cursor: pointer;
+  background-color: var(--color-primary);
+  color: var(--color-text-on-primary);
+  border-radius: var(--border-radius-sm);
+  font-weight: bold;
+  transition: var(--transition-fast);
+}
+.custom-file-upload:hover {
+  background-color: var(--color-primary-dark);
+}
+
+/* =================================== */
+/* 8. Aspect Ratio 컨트롤 스타일 (이퀄라이저와 유사하게) */
+/* =================================== */
+
+/* 화면 비율 섹션 전체 컨테이너 */
+.aspect-ratio-section {
+  /* var()는 CSS 변수입니다. 기존 스타일에 맞게 값을 조정하세요. */
+  padding: var(--spacing-md, 16px);
+  display: flex;
+  flex-direction: column;
+}
+
+/* "화면 비율" 제목 스타일 */
+.aspect-ratio-section h3 {
+  margin: 0 0 var(--spacing-md, 16px) 0;
+  text-align: center;                 /* 가운데 정렬 통일 */
+  font-size: 16px;
+  color: var(--color-text-secondary, #555);
+  font-weight: bold;                  /* 굵은 글씨로 통일 */
+}
+
+/* 비율 버튼들을 감싸는 컨테이너 */
+.aspect-ratio-buttons {
+  display: flex;
+  justify-content: center;            /* ✨ 그룹을 수평 중앙에 배치 */
+  align-items: center;                /* 버튼들을 세로 중앙에 정렬 */
+  gap: 12px;                          /* 버튼 사이의 간격 */
+  flex-wrap: wrap;                    /* 창이 좁아지면 버튼이 줄바꿈 되도록 설정 */
+}
+
+/* 개별 비율 버튼 스타일 */
+.ratio-button {
+  padding: 8px 16px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #f0f0f0;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+/* 버튼에 마우스를 올렸을 때 */
+.ratio-button:hover {
+  border-color: #999;
+  background-color: #e9e9e9;
+}
+
+/* 현재 선택된 활성 버튼 스타일 */
+.ratio-button.active {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+  font-weight: bold;
+}
 
 /* ==========================================================================
-   Responsive (for smaller screens)
+   9. Horizontal & Responsive Layout
    ========================================================================== */
+   
+/* Horizontal Layout for loaded video state */
+.trimmer-layout-horizontal {
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.player-panel {
+  flex: 3;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  min-width: 0;
+}
+
+.audio-controls-group {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  background-color: var(--color-surface-alt);
+}
+
+.volume-control-section { width: 100%; }
+
+.volume-control-section h3 {
+  margin: 0 0 var(--spacing-md) 0;
+  text-align: center; /* 가운데 정렬 통일 */
+  font-size: 16px;
+  color: var(--color-text-secondary);
+  font-weight: bold; /* 굵은 글씨로 통일 */
+}
+
+.volume-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+.volume-controls .volume-slider { flex-grow: 1; }
+
+/* Responsive for smaller screens */
 @media (max-width: 768px) {
   .trimmer-container {
     min-width: 90%;
   }
 
-  .controls-wrapper {
+  .controls-wrapper, .trimmer-layout-horizontal {
     flex-direction: column;
   }
+  
   .equalizer-section {
     border-left: none;
-    border-top: 1px solid #e2e8f0;
+    border-top: 1px solid var(--color-border);
   }
+  
   .equalizer-controls {
-    flex-direction: row; /* 가로로 다시 눕히고 */
-    flex-wrap: wrap; /* 줄바꿈 허용 */
-    height: auto;
-    justify-content: center;
+    display: flex;
+    justify-content: space-evenly;
+    width: 100%;
   }
-  /* 세로 슬라이더를 가로로 바꾸는 것은 rc-slider 구조상 까다로우므로
-     여기서는 그냥 래핑만 처리합니다. */
 }

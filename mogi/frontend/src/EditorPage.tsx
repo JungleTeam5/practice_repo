@@ -21,6 +21,8 @@ const EditorPage: React.FC = () => {
       startTime: 0,
       endTime: 0,
       equalizer: JSON.parse(JSON.stringify(defaultEQBands)), // 깊은 복사로 초기화
+      volume: 1,
+      aspectRatio: '16:9',
     },
     {
       id: 'trimmer2',
@@ -28,6 +30,8 @@ const EditorPage: React.FC = () => {
       startTime: 0,
       endTime: 0,
       equalizer: JSON.parse(JSON.stringify(defaultEQBands)), // 깊은 복사로 초기화
+      volume: 1,
+      aspectRatio: '16:9',
     },
   ]);
 
@@ -59,11 +63,15 @@ const EditorPage: React.FC = () => {
         startTime: trimmer1Data.startTime,
         endTime: trimmer1Data.endTime,
         equalizer: trimmer1Data.equalizer, // 이퀄라이저 데이터 추가
+        volume: trimmer1Data.volume,
+        aspectRatio: trimmer1Data.aspectRatio,
       },
       trimmer2: {
         startTime: trimmer2Data.startTime,
         endTime: trimmer2Data.endTime,
         equalizer: trimmer2Data.equalizer, // 이퀄라이저 데이터 추가
+        volume: trimmer2Data.volume,
+        aspectRatio: trimmer2Data.aspectRatio,
       },
     };
     formData.append('editData', JSON.stringify(editData));
