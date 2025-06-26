@@ -57,5 +57,9 @@
 	<string>녹화된 합주 영상을 갤러리에 저장하기 위해 사진첩 접근 권한이 필요합니다.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>녹화된 합주 영상을 갤러리에 저장하기 위해 사진첩 접근 권한이 필요합니다.</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>audio</string>
+	</array>
 </dict>
 </plist>

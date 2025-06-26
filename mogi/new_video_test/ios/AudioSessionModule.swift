@@ -1,5 +1,4 @@
-// AudioSessionModule.swift
-
+// AudioSessionModule.swift (수정)
 import Foundation
 import AVFoundation
 
@@ -10,8 +9,9 @@ class AudioSessionModule: NSObject {
   func activateAudioSession(_ resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
     let audioSession = AVAudioSession.sharedInstance()
     do {
-      try audioSession.setCategory(.playAndRecord, mode: .videoRecording, options: [.mixWithOthers, .defaultToSpeaker, .allowBluetooth])
-      try audioSession.setActive(true)
+      // 이미 AppDelegate에서 올바르게 설정되었을 것이므로 setCategory 호출 제거
+      // try audioSession.setCategory(.playAndRecord, mode: .videoRecording, options: [.mixWithOthers, .defaultToSpeaker, .allowBluetooth, .allowAirPlay])
+      try audioSession.setActive(true) // 단순히 활성화만 수행
       print("Swift: 오디오 세션 활성화 성공.")
       resolve("Audio session activated.")
     } catch {
@@ -19,8 +19,7 @@ class AudioSessionModule: NSObject {
       reject("AUDIO_SESSION_ERROR", "Failed to activate audio session", error)
     }
   }
-  
-  // --- [추가] 오디오 세션을 비활성화하는 함수 ---
+
   @objc
   func deactivateAudioSession() {
     let audioSession = AVAudioSession.sharedInstance()

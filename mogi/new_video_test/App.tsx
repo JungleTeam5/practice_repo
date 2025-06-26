@@ -143,9 +143,9 @@ const App = () => {
       await AudioSessionModule.activateAudioSession();
       console.log('JS: 네이티브 오디오 세션 활성화 성공.');
 
-      setIsRecording(true);
       setIsVideoPaused(false);
       
+      setIsRecording(true);
       camera.current.startRecording({
         onRecordingFinished: async (video) => { 
           console.log('녹화 완료:', video);
@@ -219,6 +219,8 @@ const App = () => {
             resizeMode="contain"
             repeat={true}
             mixWithOthers="mix"
+            muted={false}
+            disableAudioSessionManagement={true}
           />
         ) : (
           <View style={styles.placeholderContainer}>

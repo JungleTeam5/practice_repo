@@ -2,6 +2,8 @@ import UIKit
 import React
 import React_RCTAppDelegate
 import ReactAppDependencyProvider
+import AVFoundation
+
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -14,6 +16,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
   ) -> Bool {
+    let audioSession = AVAudioSession.sharedInstance()
+        do {
+          try audioSession.setCategory(.playAndRecord, options: [.mixWithOthers, .defaultToSpeaker])
+          try audioSession.setActive(true)
+          print("✅ 오디오 세션 설정 완료")
+        } catch {
+          print("⚠️ 오디오 세션 설정 실패: \(error)")
+        }
+    
     let delegate = ReactNativeDelegate()
     let factory = RCTReactNativeFactory(delegate: delegate)
     delegate.dependencyProvider = RCTAppDependencyProvider()
