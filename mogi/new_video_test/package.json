@@ -1,5 +1,5 @@
 {
-  "name": "video_test",
+  "name": "new_video_test",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -13,6 +13,7 @@
     "@react-native/new-app-screen": "0.80.0",
     "react": "19.1.0",
     "react-native": "0.80.0",
+    "react-native-device-info": "^14.0.4",
     "react-native-document-picker": "^9.3.1",
     "react-native-video": "^6.15.0",
     "react-native-vision-camera": "^4.7.0"

@@ -24,11 +24,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     window = UIWindow(frame: UIScreen.main.bounds)
 
     factory.startReactNative(
-      withModuleName: "video_test",
+      withModuleName: "new_video_test",
       in: window,
       launchOptions: launchOptions
     )
-    
+
     return true
   }
 }
