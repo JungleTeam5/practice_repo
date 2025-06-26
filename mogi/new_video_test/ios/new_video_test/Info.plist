@@ -53,9 +53,9 @@
 	<string>밴드 합주 영상을 녹화하기 위해 카메라 권한이 필요합니다.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>밴드 합주 사운드를 녹음하기 위해 마이크 권한이 필요합니다.</string>
-	<key>LSSupportsOpeningDocumentsInPlace</key>
-	<true/>
-	<key>UIFileSharingEnabled</key>
-	<true/>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>녹화된 합주 영상을 갤러리에 저장하기 위해 사진첩 접근 권한이 필요합니다.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>녹화된 합주 영상을 갤러리에 저장하기 위해 사진첩 접근 권한이 필요합니다.</string>
 </dict>
 </plist>

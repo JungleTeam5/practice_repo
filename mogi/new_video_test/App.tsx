@@ -9,6 +9,7 @@ import {
   Platform,
   ActivityIndicator,
   NativeModules,
+  PermissionsAndroid, // 안드로이드 권한 요청을 위해 다시 추가합니다.
 } from 'react-native';
 import Video, {VideoRef} from 'react-native-video';
 import {
@@ -18,6 +19,12 @@ import {
   useMicrophonePermission,
 } from 'react-native-vision-camera';
 import DocumentPicker from 'react-native-document-picker';
+// --- NEW, MODERN, AND STANDARD LIBRARY FOR GALLERY ACCESS ---
+// 1. Install this library: npm install @react-native-camera-roll/camera-roll
+// 2. Link it: cd ios && npx pod-install
+// 3. For iOS, add NSPhotoLibraryAddUsageDescription to your Info.plist
+import { CameraRoll } from "@react-native-camera-roll/camera-roll";
+import { request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 
 const {AudioSessionModule} = NativeModules;
 
@@ -41,16 +48,50 @@ const App = () => {
   const [isCheckingPermissions, setIsCheckingPermissions] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
 
+  // --- 안드로이드 저장소 권한 요청 로직 (다시 필요) ---
+  // 기존 함수를 아래와 같이 수정합니다.
+  const checkAndRequestStoragePermission = async (): Promise<boolean> => {
+    if (Platform.OS === 'ios') {
+      // iOS용 권한 요청 로직
+      const resultOne = await request(PERMISSIONS.IOS.PHOTO_LIBRARY);
+      const resultTwo = await request(PERMISSIONS.IOS.PHOTO_LIBRARY_ADD_ONLY);
+      if (resultOne === RESULTS.GRANTED && resultTwo === RESULTS.GRANTED) {
+        return true;
+      } else {
+        Alert.alert('권한 필요', '영상을 저장하려면 사진첩 접근 권한이 필요합니다.');
+        return false;
+      }
+    } else { // 안드로이드 로직은 그대로 유지
+      if (Platform.Version >= 33) {
+        return true;
+      }
+      try {
+        const granted = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+            {
+                title: '저장 공간 권한 필요',
+                message: '녹화된 영상을 갤러리에 저장하기 위해 권한이 필요합니다.',
+                buttonPositive: '확인',
+            },
+        );
+        return granted === PermissionsAndroid.RESULTS.GRANTED;
+      } catch (err) {
+        console.warn(err);
+        return false;
+      }
+    }
+  };
+
   useEffect(() => {
     const checkPermissions = async () => {
       await requestCameraPermission();
       await requestMicrophonePermission();
+      await checkAndRequestStoragePermission();
       setIsCheckingPermissions(false);
     };
     checkPermissions();
 
     return () => {
-      // 앱 종료 시, 이전에 세션이 활성화 되었다면 비활성화
       if (AudioSessionModule.deactivateAudioSession) {
         AudioSessionModule.deactivateAudioSession();
       }
@@ -62,7 +103,6 @@ const App = () => {
       const result = await DocumentPicker.pick({
         type: [DocumentPicker.types.video],
       });
-      // 비디오를 선택하면 다른 설정 없이 바로 URI만 저장합니다.
       setSelectedVideoUri(result[0].uri);
     } catch (err) {
       if (DocumentPicker.isCancel(err)) {
@@ -76,7 +116,6 @@ const App = () => {
   const handleRecordButtonPress = async () => {
     if (!camera.current) return;
 
-    // --- 녹화 중지 로직 ---
     if (isRecording) {
       try {
         await camera.current.stopRecording();
@@ -91,28 +130,40 @@ const App = () => {
       videoPlayer.current?.seek(0);
       return;
     }
-
-    // --- 녹화 시작 로직 ---
+    
+    // --- 녹화 시작 전 저장소 권한 확인 ---
+    const hasStoragePermission = await checkAndRequestStoragePermission();
+    if (!hasStoragePermission) {
+        Alert.alert('권한 거부됨', '갤러리 접근 권한 없이는 영상을 저장할 수 없습니다.');
+        return;
+    }
+    
     try {
       setIsLoading(true);
-      // 1. [핵심] 녹화 시작 직전에만 오디오 세션을 활성화합니다.
       await AudioSessionModule.activateAudioSession();
       console.log('JS: 네이티브 오디오 세션 활성화 성공.');
 
       setIsRecording(true);
       setIsVideoPaused(false);
       
-      // 2. [핵심] startRecording 호출 시 audio: true 옵션을 전달합니다.
       camera.current.startRecording({
-        audio: true, 
-        onRecordingFinished: video => {
+        onRecordingFinished: async (video) => { 
           console.log('녹화 완료:', video);
-          Alert.alert('녹화 완료', `영상이 저장되었습니다:\n${video.path}`);
           if (AudioSessionModule.deactivateAudioSession) {
             AudioSessionModule.deactivateAudioSession();
           }
+
+          // --- NEW: @react-native-camera-roll/camera-roll을 사용하여 갤러리에 저장 ---
+          try {
+            // video.path는 'file://'로 시작하는 올바른 경로입니다.
+            await CameraRoll.saveAsset(video.path, { type: 'video' });
+            Alert.alert('녹화 완료', '영상이 갤러리에 저장되었습니다!');
+          } catch (saveError) {
+            console.error('영상 저장 실패:', saveError);
+            Alert.alert('오류', '영상을 갤러리에 저장하는 데 실패했습니다.');
+          }
         },
-        onRecordingError: error => {
+        onRecordingError: (error) => {
           console.error('녹화 중 에러 발생:', error);
           Alert.alert('오류', '녹화 중 문제가 발생했습니다.');
           if (AudioSessionModule.deactivateAudioSession) {
@@ -186,8 +237,7 @@ const App = () => {
             device={device}
             isActive={true}
             video={true}
-            // 3. [핵심] 평상시에는 Camera가 오디오 세션에 관여하지 않도록 false로 설정합니다.
-            audio={false} 
+            audio={true} 
           />
         ) : (
           <Text style={styles.infoText}>사용 가능한 카메라가 없습니다.</Text>
