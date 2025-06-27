@@ -1,7 +1,5 @@
 // src/App.tsx
 import React from 'react';
-import VideoUploader from './components/VideoUploader';
-import VideoTrimmer from './components/VideoTrimmer';
 import './App.css';
 import EditorPage from './EditorPage';
 
