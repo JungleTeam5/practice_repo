@@ -11,12 +11,13 @@ import {
   Alert,
   Platform,
 } from 'react-native';
+import { copyAssetToCache } from '../utils/fileUtils';
+import { FFmpegKit, ReturnCode, Session } from 'ffmpeg-kit-react-native';
 
 const Colors = {
   darker: '#121212',
   lighter: '#FFFFFF',
 };
-import { FFmpegKit, ReturnCode, Session } from 'ffmpeg-kit-react-native';
 
 function FFmpegTestScreen(): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
@@ -29,8 +30,9 @@ function FFmpegTestScreen(): React.JSX.Element {
   const testExtractMetadata = async (): Promise<void> => {
     setFfmpegOutput('Running FFmpeg metadata extraction...');
     try {
-      // 절대 경로 사용
-      const inputPath = '/Users/yz/Documents/iOSTest/ffmpegTest/ios/catvideo.mp4';
+      // 내부 경로로 복사
+      const filename = 'catvideo.mp4';
+      const inputPath = await copyAssetToCache(filename);
       const command = `-i ${inputPath} -hide_banner -f null -`;
       console.log('FFmpeg Command:', command);
 

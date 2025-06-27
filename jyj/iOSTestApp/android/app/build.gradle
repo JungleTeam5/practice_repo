@@ -1,7 +1,10 @@
-apply plugin: "com.android.application"
-apply plugin: "org.jetbrains.kotlin.android"
-apply plugin: "com.facebook.react"
+import java.net.URL
 
+plugins {
+    id "com.android.application"
+    id "org.jetbrains.kotlin.android"
+    id "com.facebook.react"
+}
 /**
  * This is the configuration block to customize your React Native Android app.
  * By default you don't need to apply any configuration, just uncomment the lines you need.
@@ -85,6 +88,18 @@ android {
         versionCode 1
         versionName "1.0"
     }
+    
+    // AndroidX 설정 추가
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    
+    kotlinOptions {
+        // jvmTarget = "1.8"
+        jvmTarget = '17'
+    }
+    
     signingConfigs {
         debug {
             storeFile file('debug.keystore')
@@ -105,6 +120,12 @@ android {
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
     }
+    // Add this code for accessing the file locally after downloading
+    repositories {
+        flatDir {
+            dirs "$rootDir/libs"
+        }
+    }
 }
 
 dependencies {
@@ -116,4 +137,42 @@ dependencies {
     } else {
         implementation jscFlavor
     }
+
+    // Add the following dependencies
+    implementation(name: 'ffmpeg-kit-full-gpl', ext: 'aar')
+    implementation 'com.arthenica:smart-exception-java:0.2.1'
+}
+
+configurations.all {
+    resolutionStrategy {
+        force 'androidx.appcompat:appcompat:1.6.1'
+        force 'androidx.core:core-ktx:1.12.0'
+    }
+}
+
+// Add the following script to download the file from the cloud
+afterEvaluate {
+    def aarUrl = 'https://github.com/NooruddinLakhani/ffmpeg-kit-full-gpl/releases/download/v1.0.0/ffmpeg-kit-full-gpl.aar'
+    def aarFile = file("${rootDir}/libs/ffmpeg-kit-full-gpl.aar")
+
+    tasks.register("downloadAar") {
+        doLast {
+            if (!aarFile.parentFile.exists()) {
+                println "📁 Creating directory: ${aarFile.parentFile.absolutePath}"
+                aarFile.parentFile.mkdirs()
+            }
+            if (!aarFile.exists()) {
+                println "⏬ Downloading AAR from $aarUrl..."
+                new URL(aarUrl).withInputStream { i ->
+                    aarFile.withOutputStream { it << i }
+                }
+                println "✅ AAR downloaded to ${aarFile.absolutePath}"
+            } else {
+                println "ℹ️ AAR already exists at ${aarFile.absolutePath}"
+            }
+        }
+    }
+
+    // Make sure the AAR is downloaded before compilation begins
+    preBuild.dependsOn("downloadAar")
 }
